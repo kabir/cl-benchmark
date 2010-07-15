@@ -31,6 +31,4 @@ import java.util.List;
 public interface BenchmarkScenario
 {
    List<ClassLoaderInfo> createFactories(List<ClassPathElementInfo> infos);
-   
-   void loadClasses(List<ClassLoaderInfo> infos);
 }

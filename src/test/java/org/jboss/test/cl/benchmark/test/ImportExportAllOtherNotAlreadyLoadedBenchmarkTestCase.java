@@ -36,22 +36,23 @@ import org.jboss.test.cl.benchmark.ClassLoaderInfo;
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public class ImportExportAllOwnLoaderBenchmarkTestCase extends AbstractClassLoaderBenchmark
+public class ImportExportAllOtherNotAlreadyLoadedBenchmarkTestCase extends AbstractClassLoaderBenchmark
 {
-   public ImportExportAllOwnLoaderBenchmarkTestCase(String name)
+   public ImportExportAllOtherNotAlreadyLoadedBenchmarkTestCase(String name)
    {
       super(name);
    }
    
-   public void testLoadClassesFromOwnLoader() throws Exception
+   public void testLoadClassesFromOtherLoaderAlreadyLoader() throws Exception
    {
       runBenchmark(new BenchmarkScenario()
       {
          
          public List<ClassLoaderInfo> createFactories(List<ClassPathElementInfo> infos)
          {
-            List<ClassLoaderInfo> deploymentInfos = new ArrayList<ClassLoaderInfo>();
+            List<ClassLoaderInfo> classLoaderInfos = new ArrayList<ClassLoaderInfo>();
             
+            ClassLoaderInfo last = null;
             for (ClassPathElementInfo info : infos)
             {
                VFSClassLoaderFactory factory = new VFSClassLoaderFactory(info.getName());
@@ -61,10 +62,15 @@ public class ImportExportAllOwnLoaderBenchmarkTestCase extends AbstractClassLoad
                //Needed???
                //factory.setIncludedPackages()
                
-               deploymentInfos.add(new ClassLoaderInfo(info, factory));
+               ClassLoaderInfo classLoaderInfo = new ClassLoaderInfo(info, factory);
+               classLoaderInfos.add(classLoaderInfo);
+               
+               if (last != null)
+                  last.setLoaderWhoseClassesToLoad(classLoaderInfo);
             }      
             
-            return deploymentInfos;
+            classLoaderInfos.get(classLoaderInfos.size() - 1).setLoaderWhoseClassesToLoad(classLoaderInfos.get(0));
+            return classLoaderInfos;
          }
       });
    }

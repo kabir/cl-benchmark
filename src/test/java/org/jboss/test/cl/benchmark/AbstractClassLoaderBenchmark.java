@@ -92,7 +92,12 @@ public abstract class AbstractClassLoaderBenchmark extends AbstractTestCaseWithS
       System.out.println("Load classes...");
       
       start = System.currentTimeMillis();
-      scenario.loadClasses(classLoaderInfos);
+      for (ClassLoaderInfo info : classLoaderInfos)
+      {
+         loadClasses(info, info.getOwnClassesToLoad());
+         loadClasses(info, info.getOtherClassesToLoad());
+      }
+
       time = System.currentTimeMillis() - start;
       System.out.println("Loading classes  took." + time + "ms");
       System.out.println("\n");
@@ -102,7 +107,13 @@ public abstract class AbstractClassLoaderBenchmark extends AbstractTestCaseWithS
       System.out.println("Successful classes:    " + result.getSuccess());
       System.out.println("Failed classes:        " + result.getFailed());
       System.out.println("Wrong loader (filter): " + result.getBadFilter());
-      
-      
+   }
+   
+   private void loadClasses(ClassLoaderInfo info, String[] names)
+   {
+      for (int i = 0 ; i < names.length ; i++)
+      {
+         info.loadClass(names[i]);
+      }
    }
 }

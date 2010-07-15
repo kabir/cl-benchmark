@@ -40,6 +40,7 @@ public class ClassLoaderInfo
    private ClassLoader loader;
    private LoadingResult result;
    private String[] classesToLoad;
+   private ClassLoaderInfo loaderWhoseClassesToLoad;
    
    public ClassLoaderInfo(ClassPathElementInfo info, VFSClassLoaderFactory factory)
    {
@@ -119,8 +120,20 @@ public class ClassLoaderInfo
       return elementInfo.getUrl();
    }
    
-   public String[] getClassesToLoad()
+   public void setLoaderWhoseClassesToLoad(ClassLoaderInfo other)
    {
+      loaderWhoseClassesToLoad = other;
+   }
+
+   public String[] getOwnClassesToLoad()
+   {
+      return classesToLoad;
+   }
+
+   public String[] getOtherClassesToLoad()
+   {
+      if (loaderWhoseClassesToLoad != null)
+         return loaderWhoseClassesToLoad.classesToLoad;
       return classesToLoad;
    }
    
