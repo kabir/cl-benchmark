@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+
+   <bean name="ClassLoaderSystem" class="org.jboss.classloader.spi.ClassLoaderSystem">
+      <constructor factoryClass="org.jboss.test.cl.benchmark.AbstractClassLoaderBenchmark" factoryMethod="getClassLoaderSystem"/>
+   </bean>
+
+   <bean name="ClassLoading" class="org.jboss.classloading.spi.dependency.ClassLoading">
+      <incallback method="addModule" state="Configured"/>
+      <incallback method="addGlobalCapabilitiesProvider" state="Configured"/>
+      <uncallback method="removeModule" state="Configured"/>
+      <uncallback method="removeGlobalCapabilitiesProvider" state="Configured"/>
+   </bean>
+
+   <bean name="SchemaResolverConfig" class="org.jboss.xb.binding.sunday.unmarshalling.SchemaResolverConfig">
+      <property name="bindingClasses">
+         <map keyClass="java.lang.String" valueClass="java.lang.String">
+            <entry>
+               <key>urn:jboss:classloader:1.0</key>
+               <value>org.jboss.classloading.spi.vfs.metadata.VFSClassLoaderFactory10</value>
+            </entry>
+            <entry>
+               <key>urn:jboss:classloading:1.0</key>
+               <value>org.jboss.classloading.spi.metadata.ClassLoadingMetaData10</value>
+            </entry>
+         </map>
+      </property>
+   </bean>
+
+</deployment>
