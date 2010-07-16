@@ -22,10 +22,16 @@
 package org.jboss.test.cl.benchmark;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import javax.resource.spi.IllegalStateException;
 
@@ -59,32 +65,75 @@ public class ClassLoaderBenchmarkTestDelegate extends MicrocontainerTestDelegate
       String classpath = System.getProperty("java.class.path");
       String[] jars = classpath.split(File.pathSeparator);
       
-      int packages = 0;
-      int classes = 0;
-      int excluded = 0;
-      for (String jar : jars)
-      {
-         if (ClassPathElementInfo.isJar(jar))
-         {
-            ClassPathElementInfo info = ClassPathElementInfo.of(jar); 
-            if (info != null)
-            {
-               classPathElements.add(info);
-               packages += info.getPackageNames().size();
-               classes += info.getClassNames().size();
-            }
-            else
-               excluded++;
-         }
-      }
-         
-      System.out.println(classPathElements.size() + " jars indexed. Classes: " + classes + ". Packages: " + packages + ". Excluded: " + excluded);
+      createClassPathElements(jars);
       
       URL commonUrl = getClass().getResource("/org/jboss/test/cl/benchmark/Common.xml");
       if (commonUrl == null)
          throw new IllegalStateException("Null common url");
       deploy(commonUrl);      
    }
+   
+   private void createClassPathElements(String[] jars) throws IOException
+   {
+      Set<String> doneAlready = new HashSet<String>();
+      int skippedPackages = 0;
+      int skippedClasses = 0;
+      int packages = 0;
+      int classes = 0;
+      int noclasses = 0;
+      for (String jar : jars)
+      {
+         if (isJar(jar))
+         {
+            File file = new File(jar);
+            if (!file.exists())
+               throw new IllegalArgumentException("Could not find " + file);
+
+            List<String> classNames = new ArrayList<String>();
+            List<String> packageNames = new ArrayList<String>();
+            JarFile jarFile = new JarFile(file);
+            for (Enumeration<JarEntry> e = jarFile.entries() ; e.hasMoreElements() ; )
+            {
+               JarEntry entry = e.nextElement();
+               
+               //TODO - replace '/' with '.'?
+               if (entry.getName().endsWith("/")) 
+               {
+                  if (doneAlready.contains(entry.getName()))
+                  {
+                     skippedPackages++;
+                     continue;
+                  }
+                  packageNames.add(entry.getName().replace('/', '.'));
+               }
+               else if (entry.getName().endsWith(".class"))
+               {
+                  if (doneAlready.contains(entry.getName()))
+                  {
+                     skippedClasses++;
+                     continue;
+                  }
+                  classNames.add(entry.getName().substring(0, entry.getName().indexOf(".class")).replace('/', '.'));
+               }
+
+               doneAlready.add(entry.getName());
+            }
+            
+            
+            if (classNames.size() > 0)
+            {
+               classPathElements.add(new ClassPathElementInfo(jar, new File(jar).toURI().toURL(), packageNames, classNames));
+               packages += packageNames.size();
+               classes += classNames.size();
+            }
+            else
+               noclasses++;
+         }
+      }
+      System.out.println(classPathElements.size() + " jars indexed. Classes: " + classes + ". Packages: " + packages + 
+            ". Excluded: (Empty jars: " + noclasses + ". Duplicate packages: " + skippedPackages + ". Duplicate classes: " + skippedClasses + ")");
+   }
+   
 
    List<ClassPathElementInfo> getClassPathElements()
    {
@@ -111,5 +160,10 @@ public class ClassLoaderBenchmarkTestDelegate extends MicrocontainerTestDelegate
       if (contextName == null)
          contextName = factory.getName() + ":" + factory.getVersion();
       return contextName;
+   }
+
+   static boolean isJar(String name)
+   {
+      return name.endsWith(".jar");
    }
 }
