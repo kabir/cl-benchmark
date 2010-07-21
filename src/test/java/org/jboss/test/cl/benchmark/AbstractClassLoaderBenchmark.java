@@ -99,7 +99,7 @@ public abstract class AbstractClassLoaderBenchmark extends AbstractTestCaseWithS
          info.initialize(result, getBenchmarkTestDelegate().install(info.getFactory()));
       }
       long time = System.currentTimeMillis() - start;
-      System.out.println("Creating " + classLoaderInfos.size() + " class loaders took." + time + "ms");
+      System.out.println("-> Creating " + classLoaderInfos.size() + " class loaders took." + time + "ms");
       
       List<ClassLoaderInfo> infosToLoad = getLoadersForLoading(classLoaderInfos);
       
@@ -112,14 +112,9 @@ public abstract class AbstractClassLoaderBenchmark extends AbstractTestCaseWithS
       }
 
       time = System.currentTimeMillis() - start;
-      System.out.println("Loading classes  took." + time + "ms");
+      System.out.println("-> Loading classes  took." + time + "ms");
+      System.out.println("(Success: " + result.getSuccess() + " ; failed: " + result.getFailed() + " ; wrong (filter): " + result.getBadFilter() + ")");
       System.out.println("\n");
-      System.out.println("================================");
-      System.out.println("Stats:");
-      System.out.println("================================");
-      System.out.println("Successful classes:    " + result.getSuccess());
-      System.out.println("Failed classes:        " + result.getFailed());
-      System.out.println("Wrong loader (filter): " + result.getBadFilter());
       
       if (result.getFailed() > result.getSuccess())
          fail("A lot of failures!");

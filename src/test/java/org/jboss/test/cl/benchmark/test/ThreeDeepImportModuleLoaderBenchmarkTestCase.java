@@ -73,6 +73,8 @@ public class ThreeDeepImportModuleLoaderBenchmarkTestCase extends AbstractThreeD
    {
       VFSClassLoaderFactory factory = new VFSClassLoaderFactory(info.getName());
       ClassLoadingMetaDataFactory metaData = ClassLoadingMetaDataFactory.getInstance();
+      for (String pkg : info.getPackageNames())
+         factory.getCapabilities().addCapability(metaData.createPackage(pkg));
       factory.getCapabilities().addCapability(metaData.createModule(info.getName()));
       factory.getRoots().add(info.getUrl().toString());
       
@@ -85,6 +87,9 @@ public class ThreeDeepImportModuleLoaderBenchmarkTestCase extends AbstractThreeD
       VFSClassLoaderFactory factory = new VFSClassLoaderFactory(info.getName());
       ClassLoadingMetaDataFactory metaData = ClassLoadingMetaDataFactory.getInstance();
       factory.getCapabilities().addCapability(metaData.createModule(info.getName()));
+      for (String pkg : info.getPackageNames())
+         factory.getCapabilities().addCapability(metaData.createPackage(pkg));
+
       factory.getRequirements().addRequirement(metaData.createReExportModule(grandParent.getName()));
       factory.getRoots().add(info.getUrl().toString());
       
@@ -95,6 +100,8 @@ public class ThreeDeepImportModuleLoaderBenchmarkTestCase extends AbstractThreeD
    {
       VFSClassLoaderFactory factory = new VFSClassLoaderFactory(info.getName());
       ClassLoadingMetaDataFactory metaData = ClassLoadingMetaDataFactory.getInstance();
+      for (String pkg : info.getPackageNames())
+         factory.getCapabilities().addCapability(metaData.createPackage(pkg));
       factory.getRequirements().addRequirement(metaData.createReExportModule(parent.getName()));
       factory.getRoots().add(info.getUrl().toString());
       
