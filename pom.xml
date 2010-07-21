@@ -18,37 +18,38 @@
   </scm>
 
   <properties>
-    <version.jboss.jbossas>6.0.0.20100429-M3</version.jboss.jbossas>
+    <version.org.jboss.shrinkwrap>1.0.0-alpha-9</version.org.jboss.shrinkwrap>
+    <version.javassist>3.12.1.GA</version.javassist>
+    <version.org.jboss.cl>2.2.0.Alpha7</version.org.jboss.cl>    
     <version.org.jboss.test>1.1.5.GA</version.org.jboss.test>
     <version.junit>4.4</version.junit>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>org.jboss.jbossas</groupId>
-      <artifactId>jboss-as-depchain</artifactId>
-      <version>${version.jboss.jbossas}</version>
-      <type>pom</type>
-      <exclusions>
-        <exclusion>
-          <groupId>org.jboss.microcontainer</groupId>
-          <artifactId>jboss-dependency</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.jboss.microcontainer</groupId>
-          <artifactId>jboss-kernel</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.jboss.microcontainer</groupId>
-          <artifactId>jboss-aop-mc-int</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.jboss.microcontainer</groupId>
-          <artifactId>jboss-jmx-mc-int</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>javassist</groupId>
+      <artifactId>javassist</artifactId>
+      <version>${version.javassist}</version>
+      <scope>test</scope>
     </dependency>
-  
+    <dependency>
+      <groupId>org.jboss.shrinkwrap</groupId>
+      <artifactId>shrinkwrap-api</artifactId>
+      <version>${version.org.jboss.shrinkwrap}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.shrinkwrap</groupId>
+      <artifactId>shrinkwrap-impl-base</artifactId>
+      <version>${version.org.jboss.shrinkwrap}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.cl</groupId>
+      <artifactId>jboss-classloading-vfs</artifactId>
+      <version>${version.org.jboss.cl}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.jboss.test</groupId>
       <artifactId>jboss-test</artifactId>
@@ -61,19 +62,12 @@
         </exclusion>
       </exclusions>      
     </dependency>
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${version.junit}</version>
       <scope>test</scope>
     </dependency>
-    
-    <!-- dependency>
-      <groupId></groupId>
-      <artifactId></artifactId>
-      <version>${}</version>
-    </dependency -->
   </dependencies>
 
 </project>

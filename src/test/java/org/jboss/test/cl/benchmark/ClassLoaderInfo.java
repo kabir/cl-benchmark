@@ -22,7 +22,6 @@
 package org.jboss.test.cl.benchmark;
 
 import java.net.URL;
-import java.util.List;
 
 import org.jboss.classloading.spi.vfs.metadata.VFSClassLoaderFactory;
 
@@ -40,9 +39,8 @@ public class ClassLoaderInfo
    private ClassLoader loader;
    private LoadingResult result;
    private String[] classesToLoad;
-   private ClassLoaderInfo loaderWhoseClassesToLoad;
    
-   public ClassLoaderInfo(ClassPathElementInfo info, VFSClassLoaderFactory factory)
+   ClassLoaderInfo(ClassPathElementInfo info, VFSClassLoaderFactory factory)
    {
       this.elementInfo = info;
       this.factory = factory;
@@ -53,30 +51,28 @@ public class ClassLoaderInfo
       return factory;
    }
    
-   void initialize(LoadingResult result, ClassLoader loader, int num)
+   void initialize(LoadingResult result, ClassLoader loader)
    {
       this.loader = loader;
       this.result = result;
-      
-      if (classesToLoad != null)
-         return;
-      
-      List<String> all = elementInfo.getClassNames();
-      
-      if (all.size() <= num)
-         classesToLoad = all.toArray(new String[all.size()]);
-      else
+   }
+   
+   void addClassesToLoad(String...classes)
+   {
+      if (classesToLoad == null)
+         classesToLoad = classes;
+      else 
       {
-         int index = all.size() / 2;
-         classesToLoad = new String[num];
-         for (int i = 0 ; i < num ; i++)
-         {
-            index += i * (i % 2 == 1 ? -1 : +1);
-            //int j = (i * (i % 2 == 1 ? -1 : +1) + index); 
-            classesToLoad[i] = all.get(index);
-         }
+         String[] tmp = new String[classesToLoad.length + classes.length];
+         System.arraycopy(classesToLoad, 0, tmp, 0, classesToLoad.length);
+         System.arraycopy(classes, 0, tmp, 0, classes.length);
+         classesToLoad = tmp;
       }
-      
+   }
+   
+   boolean isLoadClasses()
+   {
+      return elementInfo.isLoadClasses();
    }
    
    public void loadClass(String className)
@@ -100,17 +96,12 @@ public class ClassLoaderInfo
       
    }
 
-   List<String> getClassNames()
-   {
-      return elementInfo.getClassNames();
-   }
-
    public String getName()
    {
       return elementInfo.getName();
    }
 
-   public List<String> getPackageNames()
+   public String[] getPackageNames()
    {
       return elementInfo.getPackageNames();
    }
@@ -120,21 +111,9 @@ public class ClassLoaderInfo
       return elementInfo.getUrl();
    }
    
-   public void setLoaderWhoseClassesToLoad(ClassLoaderInfo other)
-   {
-      loaderWhoseClassesToLoad = other;
-   }
-
-   public String[] getOwnClassesToLoad()
+   public String[] getClassesToLoad()
    {
       return classesToLoad;
    }
 
-   public String[] getOtherClassesToLoad()
-   {
-      if (loaderWhoseClassesToLoad != null)
-         return loaderWhoseClassesToLoad.classesToLoad;
-      return classesToLoad;
-   }
-   
 }

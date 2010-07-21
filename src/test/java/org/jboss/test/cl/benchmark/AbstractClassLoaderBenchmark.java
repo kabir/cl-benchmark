@@ -21,6 +21,7 @@
 */
 package org.jboss.test.cl.benchmark;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,8 +29,8 @@ import org.jboss.classloader.plugins.system.DefaultClassLoaderSystem;
 import org.jboss.classloader.spi.ClassLoaderDomain;
 import org.jboss.classloader.spi.ClassLoaderSystem;
 import org.jboss.classloader.spi.ParentPolicy;
+import org.jboss.classloading.spi.vfs.metadata.VFSClassLoaderFactory;
 import org.jboss.test.AbstractTestCaseWithSetup;
-import org.jboss.test.AbstractTestDelegate;
 
 /**
  * 
@@ -38,21 +39,14 @@ import org.jboss.test.AbstractTestDelegate;
  */
 public abstract class AbstractClassLoaderBenchmark extends AbstractTestCaseWithSetup
 {
-   protected static final int NUM_CLASSES_TO_LOAD = 5;
-   
    public AbstractClassLoaderBenchmark(String name)
    {
       super(name);
    }
 
-   public static AbstractTestDelegate getDelegate(Class<?> clazz) throws Exception
+   protected AbstractClassLoaderBenchmarkTestDelegate getBenchmarkTestDelegate()
    {
-      return new ClassLoaderBenchmarkTestDelegate(clazz);
-   }
-   
-   protected ClassLoaderBenchmarkTestDelegate getBenchmarkTestDelegate()
-   {
-      return (ClassLoaderBenchmarkTestDelegate)getDelegate();
+      return (AbstractClassLoaderBenchmarkTestDelegate)getDelegate();
    }
    
    public static ClassLoaderSystem getClassLoaderSystem()
@@ -63,39 +57,58 @@ public abstract class AbstractClassLoaderBenchmark extends AbstractTestCaseWithS
       return system;
    }
 
-   private void trim(List<ClassLoaderInfo> infos)
+   private void trimLoadersWithNoClasses(List<ClassLoaderInfo> infos)
    {
       for (Iterator<ClassLoaderInfo> it = infos.iterator() ; it.hasNext() ; )
       {
-         if (it.next().getClassNames().size() == 0)
+         String[] classes = it.next().getClassesToLoad();
+         if (classes == null || classes.length == 0)
             it.remove();
       }
+   }
+   
+   private List<ClassLoaderInfo> getLoadersForLoading(List<ClassLoaderInfo> infos)
+   {
+      int classes = 0;
+      List<ClassLoaderInfo> result = new ArrayList<ClassLoaderInfo>();
+      for (Iterator<ClassLoaderInfo> it = infos.iterator() ; it.hasNext() ; )
+      {
+         ClassLoaderInfo current = it.next();
+         if (current.isLoadClasses())
+         {
+            result.add(current);
+            classes += current.getClassesToLoad().length;
+         }
+      }
+      System.out.println("Will load a total of " + classes + " classes from " + result.size() + " loaders.");
+      return result;
    }
    
    protected void runBenchmark(BenchmarkScenario scenario) throws Exception
    {
       List<ClassLoaderInfo> classLoaderInfos = scenario.createFactories(getBenchmarkTestDelegate().getClassPathElements());
       
-      System.out.println("Starting run. " + classLoaderInfos.size() + " jars indexed, will attempt to load " + NUM_CLASSES_TO_LOAD + " class from each.");
-      trim (classLoaderInfos);
+      System.out.println("Starting run. " + classLoaderInfos.size() + " jars indexed");
+      trimLoadersWithNoClasses(classLoaderInfos);
       System.out.println("Trimmed the empty jars, " + classLoaderInfos.size() + " to deploy.");
       
       LoadingResult result = new LoadingResult();
       
       long start = System.currentTimeMillis();
       for (ClassLoaderInfo info : classLoaderInfos) {
-         info.initialize(result, getBenchmarkTestDelegate().install(info.getFactory()), NUM_CLASSES_TO_LOAD);
+         info.initialize(result, getBenchmarkTestDelegate().install(info.getFactory()));
       }
       long time = System.currentTimeMillis() - start;
       System.out.println("Creating " + classLoaderInfos.size() + " class loaders took." + time + "ms");
       
+      List<ClassLoaderInfo> infosToLoad = getLoadersForLoading(classLoaderInfos);
+      
       System.out.println("Load classes...");
       
       start = System.currentTimeMillis();
-      for (ClassLoaderInfo info : classLoaderInfos)
+      for (ClassLoaderInfo info : infosToLoad)
       {
-         loadClasses(info, info.getOwnClassesToLoad());
-         loadClasses(info, info.getOtherClassesToLoad());
+         loadClasses(info, info.getClassesToLoad());
       }
 
       time = System.currentTimeMillis() - start;
@@ -107,7 +120,11 @@ public abstract class AbstractClassLoaderBenchmark extends AbstractTestCaseWithS
       System.out.println("Successful classes:    " + result.getSuccess());
       System.out.println("Failed classes:        " + result.getFailed());
       System.out.println("Wrong loader (filter): " + result.getBadFilter());
+      
+      if (result.getFailed() > result.getSuccess())
+         fail("A lot of failures!");
    }
+   
    
    private void loadClasses(ClassLoaderInfo info, String[] names)
    {
@@ -116,4 +133,13 @@ public abstract class AbstractClassLoaderBenchmark extends AbstractTestCaseWithS
          info.loadClass(names[i]);
       }
    }
+   
+   protected ClassLoaderInfo createClassLoaderInfo(ClassPathElementInfo elementInfo, VFSClassLoaderFactory factory, String...classesToLoad)
+   {
+      ClassLoaderInfo info = new ClassLoaderInfo(elementInfo, factory);
+      info.addClassesToLoad(classesToLoad);
+      
+      return info;
+   }
+   
 }

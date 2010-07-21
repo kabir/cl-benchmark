@@ -26,19 +26,18 @@ import java.util.List;
 
 import org.jboss.classloading.spi.metadata.ExportAll;
 import org.jboss.classloading.spi.vfs.metadata.VFSClassLoaderFactory;
-import org.jboss.test.cl.benchmark.AbstractClassLoaderBenchmark;
 import org.jboss.test.cl.benchmark.BenchmarkScenario;
-import org.jboss.test.cl.benchmark.ClassPathElementInfo;
 import org.jboss.test.cl.benchmark.ClassLoaderInfo;
+import org.jboss.test.cl.benchmark.ClassPathElementInfo;
 
 /**
  * 
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public class ImportExportAllOwnLoaderBenchmarkTestCase extends AbstractClassLoaderBenchmark
+public class ThreeDeepImportExportAllOwnLoaderBenchmarkTestCase extends AbstractThreeDeepClassLoaderBenchmark
 {
-   public ImportExportAllOwnLoaderBenchmarkTestCase(String name)
+   public ThreeDeepImportExportAllOwnLoaderBenchmarkTestCase(String name)
    {
       super(name);
    }
@@ -61,7 +60,7 @@ public class ImportExportAllOwnLoaderBenchmarkTestCase extends AbstractClassLoad
                //Needed???
                //factory.setIncludedPackages()
                
-               deploymentInfos.add(new ClassLoaderInfo(info, factory));
+               deploymentInfos.add(createClassLoaderInfo(info, factory, info.getClassNames()));
             }      
             
             return deploymentInfos;

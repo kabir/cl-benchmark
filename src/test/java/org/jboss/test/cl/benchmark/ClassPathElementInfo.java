@@ -22,6 +22,7 @@
 package org.jboss.test.cl.benchmark;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,24 +34,31 @@ public class ClassPathElementInfo
 {
    private final String name;
    private final URL url;
-   private final List<String> packageNames;
-   private final List<String> classNames;
+   private final String[] packageNames;
+   private final String[] classNames;
+   private final boolean loadClasses;
+   private final List<ClassPathElementInfo> importedJars = new ArrayList<ClassPathElementInfo>();
 
-   ClassPathElementInfo(String name, URL url, List<String> packageNames, List<String> classNames)
+   ClassPathElementInfo(String name, URL url, List<String> packageNames, List<String> classNames, boolean loadClasses)
    {
       this.name = name;
-      this.packageNames = packageNames;
-      this.classNames = classNames;
+      this.packageNames = packageNames.toArray(new String[packageNames.size()]);
+      this.classNames = classNames.toArray(new String[classNames.size()]);
       this.url = url;
+      this.loadClasses = loadClasses;
    }
    
+   public boolean isLoadClasses()
+   {
+      return loadClasses;
+   }
 
-   public List<String> getPackageNames()
+   public String[] getPackageNames()
    {
       return packageNames;
    }
 
-   public List<String> getClassNames()
+   public String[] getClassNames()
    {
       return classNames;
    }
@@ -63,6 +71,16 @@ public class ClassPathElementInfo
    public URL getUrl()
    {
       return url;
+   }
+   
+   void addImportedJar(ClassPathElementInfo imported)
+   {
+      importedJars.add(imported);
+   }
+   
+   public List<ClassPathElementInfo> getImportedJars()
+   {
+      return importedJars;
    }
 
 }
