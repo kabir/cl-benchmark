@@ -121,8 +121,8 @@ public abstract class AbstractClassLoaderBenchmark<T extends ClassLoaderInfo> ex
       
       System.out.println("-------------------------------");
       System.out.println(this.getClass().getSimpleName());
-      System.out.println("Deploy " + create + "ms");
-      System.out.println("Load   " + load + "ms");
+      System.out.println("Create (ms)\tLoad (ms)");
+      System.out.println(create + "\t" + load);
       System.out.println("-------------------------------");
    }
    
