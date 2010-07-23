@@ -23,8 +23,6 @@ package org.jboss.test.cl.benchmark;
 
 import java.net.URL;
 
-import org.jboss.classloading.spi.vfs.metadata.VFSClassLoaderFactory;
-
 /**
  * 
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
@@ -35,22 +33,16 @@ public class ClassLoaderInfo
    private static final ClassLoader SYSTEM = ClassLoader.getSystemClassLoader();
 
    private final ClassPathElementInfo elementInfo;
-   private final VFSClassLoaderFactory factory;
+   //private final VFSClassLoaderFactory factory;
    private ClassLoader loader;
    private LoadingResult result;
    private String[] classesToLoad;
    
-   ClassLoaderInfo(ClassPathElementInfo info, VFSClassLoaderFactory factory)
+   ClassLoaderInfo(ClassPathElementInfo info)
    {
       this.elementInfo = info;
-      this.factory = factory;
    }
 
-   public VFSClassLoaderFactory getFactory()
-   {
-      return factory;
-   }
-   
    void initialize(LoadingResult result, ClassLoader loader)
    {
       this.loader = loader;

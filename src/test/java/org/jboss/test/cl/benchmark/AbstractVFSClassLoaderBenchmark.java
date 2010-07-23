@@ -19,34 +19,28 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */ 
-package org.jboss.test.cl.benchmark.test;
+package org.jboss.test.cl.benchmark;
 
-import org.jboss.test.AbstractTestDelegate;
-import org.jboss.test.cl.benchmark.AbstractClassLoaderBenchmark;
-import org.jboss.test.cl.benchmark.ThreeDeepClassLoaderBenchmarkTestDelegate;
+import org.jboss.classloading.spi.vfs.metadata.VFSClassLoaderFactory;
 
 /**
  * 
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public abstract class AbstractThreeDeepClassLoaderBenchmark extends AbstractClassLoaderBenchmark
+public abstract class AbstractVFSClassLoaderBenchmark extends AbstractClassLoaderBenchmark<VFSClassLoaderInfo>
 {
-   public AbstractThreeDeepClassLoaderBenchmark(String name)
+   public AbstractVFSClassLoaderBenchmark(String name)
    {
       super(name);
    }
 
-   public static AbstractTestDelegate getDelegate(Class<?> clazz)
+   protected VFSClassLoaderInfo createClassLoaderInfo(ClassPathElementInfo elementInfo, VFSClassLoaderFactory factory, String...classesToLoad)
    {
-      try
-      {
-         return new ThreeDeepClassLoaderBenchmarkTestDelegate(clazz);
-      }
-      catch (Exception e)
-      {
-         throw new RuntimeException(e);
-      }
+      VFSClassLoaderInfo info = new VFSClassLoaderInfo(elementInfo, factory);
+      info.addClassesToLoad(classesToLoad);
+      
+      return info;
    }
 
 }

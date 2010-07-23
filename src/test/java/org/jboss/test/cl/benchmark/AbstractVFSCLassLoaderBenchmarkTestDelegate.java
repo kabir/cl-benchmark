@@ -21,51 +21,40 @@
 */ 
 package org.jboss.test.cl.benchmark;
 
-import java.net.URL;
-import java.util.List;
+import java.util.Collections;
 
+import junit.framework.AssertionFailedError;
+
+import org.jboss.beans.metadata.spi.BeanMetaDataFactory;
 import org.jboss.classloading.spi.vfs.metadata.VFSClassLoaderFactory;
-import org.jboss.test.kernel.junit.MicrocontainerTestDelegate;
+import org.jboss.dependency.spi.ControllerState;
+import org.jboss.kernel.plugins.deployment.AbstractKernelDeployment;
 
 /**
  * 
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public abstract class AbstractClassLoaderBenchmarkTestDelegate<T extends ClassLoaderInfo> extends MicrocontainerTestDelegate
+public abstract class AbstractVFSCLassLoaderBenchmarkTestDelegate extends AbstractClassLoaderBenchmarkTestDelegate<VFSClassLoaderInfo>
 {
-   AbstractTestSetCreator creator;
-   
-   public AbstractClassLoaderBenchmarkTestDelegate(Class<?> clazz, AbstractTestSetCreator creator) throws Exception
+   public AbstractVFSCLassLoaderBenchmarkTestDelegate(Class<?> clazz, AbstractTestSetCreator creator) throws Exception
    {
-      super(clazz);
-      this.creator = creator;
+      super(clazz, creator);
    }
    
    @Override
-   public void setUp() throws Exception
+   ClassLoader createLoader(VFSClassLoaderInfo classLoaderInfo) throws Exception
    {
-      super.setUp();
-      
-      URL commonUrl = getClass().getResource("/org/jboss/test/cl/benchmark/Common.xml");
-      if (commonUrl == null)
-         throw new IllegalStateException("Null common url");
-      deploy(commonUrl);      
-      creator.createClassesAndJars();
+      VFSClassLoaderFactory factory = classLoaderInfo.getFactory();
+      AbstractKernelDeployment deployment = new AbstractKernelDeployment();
+      deployment.setName(factory.getName() + ":" + factory.getVersion());
+      deployment.setBeanFactories(Collections.singletonList((BeanMetaDataFactory) factory));
+      deploy(deployment);
+ 
+      Object object = getBean(getContextName(factory), ControllerState.INSTALLED);
+      if (object instanceof ClassLoader == false)
+         throw new AssertionFailedError(object + " is not a classloader");
+ 
+      return (ClassLoader)object;
    }
-   
-   List<ClassPathElementInfo> getClassPathElements()
-   {
-      return creator.getClassPathElements();
-   }
-   
-   protected String getContextName(VFSClassLoaderFactory factory)
-   {
-      String contextName = factory.getContextName();
-      if (contextName == null)
-         contextName = factory.getName() + ":" + factory.getVersion();
-      return contextName;
-   }
-   
-   abstract ClassLoader createLoader(T classLoaderInfo) throws Exception;
 }

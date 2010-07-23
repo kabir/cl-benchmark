@@ -24,21 +24,16 @@ package org.jboss.test.cl.benchmark;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * 
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public class ThreeDeepClassLoaderBenchmarkTestDelegate extends AbstractClassLoaderBenchmarkTestDelegate
+public class ThreeDeepTestSetCreator extends AbstractTestSetCreator
 {
-   final static int NUMBER_JARS = 50;
-   final static int PACKAGES_PER_JAR = 10;
-   final static int CLASSES_PER_PACKAGE = 10;
-
-   public ThreeDeepClassLoaderBenchmarkTestDelegate(Class<?> clazz) throws Exception
+   public ThreeDeepTestSetCreator() throws Exception
    {
-      super(clazz);
+      super();
    }
 
    @Override
@@ -52,6 +47,7 @@ public class ThreeDeepClassLoaderBenchmarkTestDelegate extends AbstractClassLoad
    @Override
    protected void createClassPathElementInfos() throws Exception
    {
+      if (jarsDir.exists())
       for (int jar = 0 ; jar < NUMBER_JARS ; jar++)
       {
          List<String> interfacePackages = new ArrayList<String>();
@@ -173,4 +169,5 @@ public class ThreeDeepClassLoaderBenchmarkTestDelegate extends AbstractClassLoad
    {
       return getImplPkg(jar, pkg) + ".Impl" + clazz;
    }
+
 }

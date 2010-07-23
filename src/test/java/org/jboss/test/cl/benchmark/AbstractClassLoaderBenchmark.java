@@ -29,7 +29,6 @@ import org.jboss.classloader.plugins.system.DefaultClassLoaderSystem;
 import org.jboss.classloader.spi.ClassLoaderDomain;
 import org.jboss.classloader.spi.ClassLoaderSystem;
 import org.jboss.classloader.spi.ParentPolicy;
-import org.jboss.classloading.spi.vfs.metadata.VFSClassLoaderFactory;
 import org.jboss.test.AbstractTestCaseWithSetup;
 
 /**
@@ -37,16 +36,16 @@ import org.jboss.test.AbstractTestCaseWithSetup;
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public abstract class AbstractClassLoaderBenchmark extends AbstractTestCaseWithSetup
+public abstract class AbstractClassLoaderBenchmark<T extends ClassLoaderInfo> extends AbstractTestCaseWithSetup
 {
    public AbstractClassLoaderBenchmark(String name)
    {
       super(name);
    }
 
-   protected AbstractClassLoaderBenchmarkTestDelegate getBenchmarkTestDelegate()
+   protected AbstractClassLoaderBenchmarkTestDelegate<T> getBenchmarkTestDelegate()
    {
-      return (AbstractClassLoaderBenchmarkTestDelegate)getDelegate();
+      return (AbstractClassLoaderBenchmarkTestDelegate<T>)getDelegate();
    }
    
    public static ClassLoaderSystem getClassLoaderSystem()
@@ -57,9 +56,9 @@ public abstract class AbstractClassLoaderBenchmark extends AbstractTestCaseWithS
       return system;
    }
 
-   private void trimLoadersWithNoClasses(List<ClassLoaderInfo> infos)
+   private void trimLoadersWithNoClasses(List<T> infos)
    {
-      for (Iterator<ClassLoaderInfo> it = infos.iterator() ; it.hasNext() ; )
+      for (Iterator<T> it = infos.iterator() ; it.hasNext() ; )
       {
          String[] classes = it.next().getClassesToLoad();
          if (classes == null || classes.length == 0)
@@ -67,13 +66,13 @@ public abstract class AbstractClassLoaderBenchmark extends AbstractTestCaseWithS
       }
    }
    
-   private List<ClassLoaderInfo> getLoadersForLoading(List<ClassLoaderInfo> infos)
+   private List<ClassLoaderInfo> getLoadersForLoading(List<T> infos)
    {
       int classes = 0;
       List<ClassLoaderInfo> result = new ArrayList<ClassLoaderInfo>();
-      for (Iterator<ClassLoaderInfo> it = infos.iterator() ; it.hasNext() ; )
+      for (Iterator<T> it = infos.iterator() ; it.hasNext() ; )
       {
-         ClassLoaderInfo current = it.next();
+         T current = it.next();
          if (current.isLoadClasses())
          {
             result.add(current);
@@ -84,9 +83,9 @@ public abstract class AbstractClassLoaderBenchmark extends AbstractTestCaseWithS
       return result;
    }
    
-   protected void runBenchmark(BenchmarkScenario scenario) throws Exception
+   protected void runBenchmark(BenchmarkScenario<T> scenario) throws Exception
    {
-      List<ClassLoaderInfo> classLoaderInfos = scenario.createFactories(getBenchmarkTestDelegate().getClassPathElements());
+      List<T> classLoaderInfos = scenario.createFactories(getBenchmarkTestDelegate().getClassPathElements());
       
       System.out.println("Starting run. " + classLoaderInfos.size() + " jars indexed");
       trimLoadersWithNoClasses(classLoaderInfos);
@@ -95,8 +94,8 @@ public abstract class AbstractClassLoaderBenchmark extends AbstractTestCaseWithS
       LoadingResult result = new LoadingResult();
       
       long start = System.currentTimeMillis();
-      for (ClassLoaderInfo info : classLoaderInfos) {
-         info.initialize(result, getBenchmarkTestDelegate().install(info.getFactory()));
+      for (T info : classLoaderInfos) {
+         info.initialize(result, getBenchmarkTestDelegate().createLoader(info));
       }
       long time = System.currentTimeMillis() - start;
       System.out.println("-> Creating " + classLoaderInfos.size() + " class loaders took." + time + "ms");
@@ -127,14 +126,6 @@ public abstract class AbstractClassLoaderBenchmark extends AbstractTestCaseWithS
       {
          info.loadClass(names[i]);
       }
-   }
-   
-   protected ClassLoaderInfo createClassLoaderInfo(ClassPathElementInfo elementInfo, VFSClassLoaderFactory factory, String...classesToLoad)
-   {
-      ClassLoaderInfo info = new ClassLoaderInfo(elementInfo, factory);
-      info.addClassesToLoad(classesToLoad);
-      
-      return info;
    }
    
 }

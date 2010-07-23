@@ -27,29 +27,29 @@ import java.util.List;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaDataFactory;
 import org.jboss.classloading.spi.vfs.metadata.VFSClassLoaderFactory;
 import org.jboss.test.cl.benchmark.BenchmarkScenario;
-import org.jboss.test.cl.benchmark.ClassLoaderInfo;
 import org.jboss.test.cl.benchmark.ClassPathElementInfo;
+import org.jboss.test.cl.benchmark.VFSClassLoaderInfo;
 
 /**
  * 
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public class ThreeDeepImportModuleLoaderBenchmarkTestCase extends AbstractThreeDeepClassLoaderBenchmark
+public class ThreeDeepVFSImportModuleLoaderBenchmarkTestCase extends AbstractThreeDeepVFSClassLoaderBenchmark
 {
-   public ThreeDeepImportModuleLoaderBenchmarkTestCase(String name)
+   public ThreeDeepVFSImportModuleLoaderBenchmarkTestCase(String name)
    {
       super(name);
    }
    
    public void testLoadClassesFromOwnLoader() throws Exception
    {
-      runBenchmark(new BenchmarkScenario()
+      runBenchmark(new BenchmarkScenario<VFSClassLoaderInfo>()
       {
          
-         public List<ClassLoaderInfo> createFactories(List<ClassPathElementInfo> infos)
+         public List<VFSClassLoaderInfo> createFactories(List<ClassPathElementInfo> infos)
          {
-            List<ClassLoaderInfo> deploymentInfos = new ArrayList<ClassLoaderInfo>();
+            List<VFSClassLoaderInfo> deploymentInfos = new ArrayList<VFSClassLoaderInfo>();
             
             for (ClassPathElementInfo info : infos)
             {
@@ -69,7 +69,7 @@ public class ThreeDeepImportModuleLoaderBenchmarkTestCase extends AbstractThreeD
       });
    }
 
-   ClassLoaderInfo createGrandParent(ClassPathElementInfo info)
+   VFSClassLoaderInfo createGrandParent(ClassPathElementInfo info)
    {
       VFSClassLoaderFactory factory = new VFSClassLoaderFactory(info.getName());
       ClassLoadingMetaDataFactory metaData = ClassLoadingMetaDataFactory.getInstance();
@@ -82,7 +82,7 @@ public class ThreeDeepImportModuleLoaderBenchmarkTestCase extends AbstractThreeD
       
    }
    
-   ClassLoaderInfo createParent(ClassPathElementInfo info, ClassPathElementInfo grandParent)
+   VFSClassLoaderInfo createParent(ClassPathElementInfo info, ClassPathElementInfo grandParent)
    {
       VFSClassLoaderFactory factory = new VFSClassLoaderFactory(info.getName());
       ClassLoadingMetaDataFactory metaData = ClassLoadingMetaDataFactory.getInstance();
@@ -96,7 +96,7 @@ public class ThreeDeepImportModuleLoaderBenchmarkTestCase extends AbstractThreeD
       return createClassLoaderInfo(info, factory, info.getClassNames());
    }
    
-   ClassLoaderInfo createImpl(ClassPathElementInfo info, ClassPathElementInfo parent)
+   VFSClassLoaderInfo createImpl(ClassPathElementInfo info, ClassPathElementInfo parent)
    {
       VFSClassLoaderFactory factory = new VFSClassLoaderFactory(info.getName());
       ClassLoadingMetaDataFactory metaData = ClassLoadingMetaDataFactory.getInstance();

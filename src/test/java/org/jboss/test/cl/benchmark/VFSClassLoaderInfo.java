@@ -21,14 +21,26 @@
 */ 
 package org.jboss.test.cl.benchmark;
 
-import java.util.List;
+import org.jboss.classloading.spi.vfs.metadata.VFSClassLoaderFactory;
 
 /**
  * 
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public interface BenchmarkScenario<T extends ClassLoaderInfo>
+public class VFSClassLoaderInfo extends ClassLoaderInfo
 {
-   List<T> createFactories(List<ClassPathElementInfo> infos);
+   VFSClassLoaderFactory factory;
+   
+   VFSClassLoaderInfo(ClassPathElementInfo info, VFSClassLoaderFactory factory)
+   {
+      super(info);
+      this.factory = factory;
+   }
+
+   public VFSClassLoaderFactory getFactory()
+   {
+      return factory;
+   }
+
 }

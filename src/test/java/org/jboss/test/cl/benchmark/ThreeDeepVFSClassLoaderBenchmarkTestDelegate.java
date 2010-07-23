@@ -21,14 +21,23 @@
 */ 
 package org.jboss.test.cl.benchmark;
 
-import java.util.List;
+
 
 /**
  * 
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public interface BenchmarkScenario<T extends ClassLoaderInfo>
+public class ThreeDeepVFSClassLoaderBenchmarkTestDelegate extends AbstractVFSCLassLoaderBenchmarkTestDelegate
 {
-   List<T> createFactories(List<ClassPathElementInfo> infos);
+   final static int NUMBER_JARS = 2;
+   final static int PACKAGES_PER_JAR = 2;
+   final static int CLASSES_PER_PACKAGE = 2;
+
+   public ThreeDeepVFSClassLoaderBenchmarkTestDelegate(Class<?> clazz) throws Exception
+   {
+      super(clazz, new ThreeDeepTestSetCreator());
+   }
+
+
 }
