@@ -54,7 +54,6 @@ public class SiblingVFSImportExportAllOtherNotAlreadyLoadedLoaderBenchmarkTestCa
             for (int i = 0 ; i < infos.size() ; i++)
             {
                ClassPathElementInfo info = infos.get(i);
-               System.out.println(i < infos.size() - 1);
                ClassPathElementInfo other = i < infos.size() - 1 ? infos.get(i+1) : info;
                   
                

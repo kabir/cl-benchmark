@@ -98,8 +98,8 @@ public abstract class AbstractClassLoaderBenchmark<T extends ClassLoaderInfo> ex
       for (T info : classLoaderInfos) {
          info.initialize(result, getBenchmarkTestDelegate().createLoader(info));
       }
-      long time = System.currentTimeMillis() - start;
-      System.out.println("-> Creating " + classLoaderInfos.size() + " class loaders took." + time + "ms");
+      long create = System.currentTimeMillis() - start;
+      System.out.println("-> Creating " + classLoaderInfos.size() + " class loaders took." + create + "ms");
       
       List<ClassLoaderInfo> infosToLoad = getLoadersForLoading(classLoaderInfos);
       
@@ -111,13 +111,19 @@ public abstract class AbstractClassLoaderBenchmark<T extends ClassLoaderInfo> ex
          loadClasses(info, info.getClassesToLoad());
       }
 
-      time = System.currentTimeMillis() - start;
-      System.out.println("-> Loading classes  took." + time + "ms");
+      long load = System.currentTimeMillis() - start;
+      System.out.println("-> Loading classes  took." + load + "ms");
       System.out.println("(Success: " + result.getSuccess() + " ; failed: " + result.getFailed() + " ; wrong (filter): " + result.getBadFilter() + ")");
       System.out.println("\n");
       
       if (result.getFailed() > result.getSuccess())
          fail("A lot of failures!");
+      
+      System.out.println("-------------------------------");
+      System.out.println(this.getClass().getSimpleName());
+      System.out.println("Deploy " + create + "ms");
+      System.out.println("Load   " + load + "ms");
+      System.out.println("-------------------------------");
    }
    
    
