@@ -31,9 +31,13 @@ import java.util.List;
  */
 public class ThreeDeepTestSetCreator extends AbstractTestSetCreator
 {
+   final static int NUMBER_JARS = 2;
+   final static int PACKAGES_PER_JAR = 2;
+   final static int CLASSES_PER_PACKAGE = 2;
+   
    public ThreeDeepTestSetCreator() throws Exception
    {
-      super();
+      super("threedeep");
    }
 
    @Override

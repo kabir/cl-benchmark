@@ -50,17 +50,13 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
  */
 public abstract class AbstractTestSetCreator
 {
-   final static int NUMBER_JARS = 2;
-   final static int PACKAGES_PER_JAR = 2;
-   final static int CLASSES_PER_PACKAGE = 2;
-   
    private List<ClassPathElementInfo> classPathElements = new ArrayList<ClassPathElementInfo>();
 
    protected final File classesDir;
    
    protected final File jarsDir;
    
-   AbstractTestSetCreator() throws Exception
+   AbstractTestSetCreator(String suffix) throws Exception
    {
       URL url = this.getClass().getProtectionDomain().getCodeSource().getLocation();
       File file = new File(url.toURI());
@@ -69,8 +65,8 @@ public abstract class AbstractTestSetCreator
       if (!file.isDirectory())
          throw new IllegalStateException(file + " is not a directory");
       
-      classesDir = new File(file.getParentFile(), "generated-classes"); 
-      jarsDir = new File(file.getParentFile(), "generated-jars");
+      classesDir = new File(file.getParentFile(), "generated-classes-" + suffix); 
+      jarsDir = new File(file.getParentFile(), "generated-jars-" + suffix);
       
       if (!jarsDir.exists())
       {

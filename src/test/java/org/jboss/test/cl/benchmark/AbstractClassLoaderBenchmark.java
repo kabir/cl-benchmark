@@ -22,6 +22,7 @@
 package org.jboss.test.cl.benchmark;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -126,6 +127,18 @@ public abstract class AbstractClassLoaderBenchmark<T extends ClassLoaderInfo> ex
       {
          info.loadClass(names[i]);
       }
+   }
+   
+   protected String[] mergeArrays(String[] array1, String[] array2)
+   {
+      if (array2 == null)
+         return array1;
+      if (array1 == null)
+         return array2;
+      String[] all = Arrays.copyOf(array1, array1.length + array2.length);
+      System.arraycopy(array2, 0, all, array1.length, array2.length);
+      return all;
+      
    }
    
 }

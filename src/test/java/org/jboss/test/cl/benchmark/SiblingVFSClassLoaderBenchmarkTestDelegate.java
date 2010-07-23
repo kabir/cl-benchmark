@@ -28,11 +28,11 @@ package org.jboss.test.cl.benchmark;
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public class ThreeDeepVFSClassLoaderBenchmarkTestDelegate extends AbstractVFSCLassLoaderBenchmarkTestDelegate
+public class SiblingVFSClassLoaderBenchmarkTestDelegate extends AbstractVFSCLassLoaderBenchmarkTestDelegate
 {
-   public ThreeDeepVFSClassLoaderBenchmarkTestDelegate(Class<?> clazz) throws Exception
+   public SiblingVFSClassLoaderBenchmarkTestDelegate(Class<?> clazz) throws Exception
    {
-      super(clazz, new ThreeDeepTestSetCreator());
+      super(clazz, new SiblingTestSetCreator());
    }
 
 
