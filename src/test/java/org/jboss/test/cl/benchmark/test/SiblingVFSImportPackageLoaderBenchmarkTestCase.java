@@ -62,7 +62,7 @@ public class SiblingVFSImportPackageLoaderBenchmarkTestCase extends AbstractSibl
                   factory.getCapabilities().addCapability(metaData.createPackage(pkg));
                factory.getRoots().add(info.getUrl().toString());
                
-               String[] otherClasses = info.getClassNames();
+               String[] otherClasses = new String[0];
                ClassPathElementInfo other = i > 0 ? infos.get(i - 1) : null;
                if (other != null)
                {
@@ -70,7 +70,8 @@ public class SiblingVFSImportPackageLoaderBenchmarkTestCase extends AbstractSibl
                      factory.getRequirements().addRequirement(new PackageRequirement(pkg));
                   otherClasses = other.getClassNames();
                }
-               deploymentInfos.add(createClassLoaderInfo(info, factory, mergeArrays(info.getClassNames(), otherClasses)));
+               //deploymentInfos.add(createClassLoaderInfo(info, factory, mergeArrays(info.getClassNames(), otherClasses)));
+               deploymentInfos.add(createClassLoaderInfo(info, factory, mergeArrays(new String[] {info.getClassNames()[0]}, otherClasses)));
             }      
             
             return deploymentInfos;

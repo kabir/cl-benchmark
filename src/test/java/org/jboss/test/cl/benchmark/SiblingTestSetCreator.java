@@ -32,8 +32,8 @@ import java.util.List;
 public class SiblingTestSetCreator extends AbstractTestSetCreator
 {
    final static int NUMBER_JARS = 100;
-   final static int PACKAGES_PER_JAR = 10;
-   final static int CLASSES_PER_PACKAGE = 15;
+   final static int PACKAGES_PER_JAR = 3;
+   final static int CLASSES_PER_PACKAGE = 4;
    
 
    public SiblingTestSetCreator() throws Exception

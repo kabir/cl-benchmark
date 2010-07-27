@@ -62,7 +62,10 @@ public class SiblingVFSImportExportAllOtherNotAlreadyLoadedLoaderBenchmarkTestCa
                factory.setImportAll(true);
                factory.getRoots().add(info.getUrl().toString());
                
-               deploymentInfos.add(createClassLoaderInfo(info, factory, mergeArrays(info.getClassNames(), other.getClassNames())));
+//               deploymentInfos.add(createClassLoaderInfo(info, factory, mergeArrays(info.getClassNames(), other.getClassNames())));
+               String[] classNames = info == other ? new String[0] : other.getClassNames(); 
+               deploymentInfos.add(createClassLoaderInfo(info, factory, mergeArrays(new String[] {info.getClassNames()[0]}, classNames)));
+
             }      
             
             return deploymentInfos;
