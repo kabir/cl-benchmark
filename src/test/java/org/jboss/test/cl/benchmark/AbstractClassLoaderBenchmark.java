@@ -116,16 +116,29 @@ public abstract class AbstractClassLoaderBenchmark<T extends ClassLoaderInfo> ex
       System.out.println("(Success: " + result.getSuccess() + " ; failed: " + result.getFailed() + " ; wrong (filter): " + result.getBadFilter() + ")");
       System.out.println("\n");
       
+      start = System.currentTimeMillis();
+      for (ClassLoaderInfo info : infosToLoad)
+      {
+         loadClassesAgain(info, info.getClassesToLoad());
+      }
+
+      long loadAgain = System.currentTimeMillis() - start;
+      
       if (result.getFailed() > result.getSuccess())
          fail("A lot of failures!");
+
       
       System.out.println("-------------------------------");
       System.out.println(this.getClass().getSimpleName());
-      System.out.println("Create (ms)\tLoad (ms)");
-      System.out.println(create + "\t" + load);
+      System.out.println("Create (ms)\tLoad (ms)\tAgain (ms)");
+      System.out.println(create + "\t" + load + "\t" + loadAgain);
       System.out.println("-------------------------------");
    }
    
+   private void loadClassesAgain(ClassLoaderInfo info, String[] names)
+   {
+      loadClasses(info, names);
+   }
    
    private void loadClasses(ClassLoaderInfo info, String[] names)
    {
